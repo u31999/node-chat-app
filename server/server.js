@@ -1,11 +1,30 @@
-const path = require('path')
-const express = require('express')
-const colors = require('colors')
 const dotenv = require('dotenv').config()
+const colors = require('colors')
+
+const path = require('path')
+const http = require('http')
+const express = require('express')
+const socketIO = require('socket.io')
+
 const app = express()
+const server = http.createServer(app)
+const io = socketIO(server)
+
 const publicPath = path.join(__dirname, '../public')
 const PORT = process.env.PORT || 3000
 
+
 app.use(express.static(publicPath))
 
-app.listen(PORT, () => console.log(`Server is running on port : `.green + `${PORT}`.cyan))
+io.on('connection', (socket) => {
+    console.log('New user connected'.yellow)
+
+    socket.on('disconnect', () => {
+    console.log('User is disconnected'.red)
+    })
+    
+})
+
+
+
+server.listen(PORT, () => console.log(`Server is running on port : `.green + `${PORT}`.cyan))
