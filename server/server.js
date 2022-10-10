@@ -22,7 +22,16 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
     console.log('User is disconnected'.red)
     })
+
+    socket.emit('newMessage', {
+        from: 'test@example.com',
+        text: 'This is a test email',
+        createdAt: 123
+    })
     
+    socket.on('createMessage', (message) => {
+        console.log('Created Message : ', message)
+    })
 })
 
 
