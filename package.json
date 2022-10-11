@@ -7,7 +7,8 @@
     "node": "17.3.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha server/**/*.test.js",
+    "test-watch": "nodemon --exec 'npm test'",
     "start": "node server/server.js",
     "serve": "nodemon server/server.js"
   },
@@ -20,6 +21,8 @@
     "socket.io": "^4.5.2"
   },
   "devDependencies": {
+    "expect": "^29.1.2",
+    "mocha": "^10.0.0",
     "nodemon": "^2.0.20"
   }
 }
