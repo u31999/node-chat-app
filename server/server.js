@@ -27,12 +27,13 @@ io.on('connection', (socket) => {
     console.log('User is disconnected'.red)
     })
 
-    
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
+
     socket.on('createMessage', (message, callback) => {
-        console.log('Created message : ', message)
-        io.emit('newMessage', message)
         
-        callback('This is a message from the server')
+        io.emit('newMessage', generateMessage(message.from, message.text))
+        
+        callback()
     })
 
     socket.on('createLocationMessage', (coords) => {
@@ -40,7 +41,7 @@ io.on('connection', (socket) => {
             coords.latitude, coords.longitude))        
     })     
 
-    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
+    
         
     })
 
