@@ -20,9 +20,10 @@ socket.on('connect', function() {
 
 
 socket.on('newMessage', function(message) {
-    
+    let formattedTime = moment(message.createdAt).format('h:mm a')
+
     let li = jQuery('<li></li>')
-    li.text(`${message.from}: ${message.text}`)
+    li.text(`${message.from} ${formattedTime}: ${message.text}`)
     jQuery('#message').append(li)
 } )
 
@@ -52,9 +53,11 @@ locationButton.on('click', function() {
 
 // The listener for location message
 socket.on('newLocationMessage', function(message) {
+    let formattedTime = moment(message.createdAt).format('h:mm a')
+
     const li = jQuery('<li></li>')
     const a = jQuery('<a target="_blank">My current location</a>')
-    li.text(`${message.from}: `)
+    li.text(`${message.from} ${formattedTime}: `)
     a.attr('href', message.url)
     li.append(a)
     jQuery('#message').append(li)
