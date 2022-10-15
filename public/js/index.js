@@ -29,3 +29,30 @@ socket.on('disconnect', function() {
     console.log('Disconnected from the server')
 })
 
+const locationButton = jQuery('#send-location')
+
+locationButton.on('click', function() {
+    if(!navigator.geolocation) {
+        return alert('Geolocation is not supported by your browser')
+    } else {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            socket.emit('createLocationMessage', {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            })
+        }, function() {
+            alert('Unable to fetch location')
+        })
+    }
+})
+
+// The listener for location message
+socket.on('newLocationMessage', function(message) {
+    const li = jQuery('<li></li>')
+    const a = jQuery('<a target="_blank">My current location</a>')
+    li.text(`${message.from}: `)
+    a.attr('href', message.url)
+    li.append(a)
+    jQuery('#message').append(li)
+})
+
