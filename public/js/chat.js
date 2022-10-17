@@ -18,23 +18,18 @@ function scrollToBottom() {
 }
 
 socket.on('connect', function() {
-            console.log('Connected to server')
-
-    jQuery('#message-form').on('submit', function() {
-        event.preventDefault();
-        let messageTextBox = jQuery('[name=message]')
-
-        socket.emit('createMessage', {
-            from: 'User',
-            text: messageTextBox.val(),
-            createdAt: new Date().getTime()
-            }, function() {
-                messageTextBox.val('')
-        })
+    console.log('Connected to server')
+    let params = jQuery.deparam(window.location.search)
+    
+    socket.emit('join', params, function(err) {
+        if(err) {
+            alert(err)
+            window.location.href = '/'
+        } else {
+            console.log('no error')
+        }
     })
 })
-
-
 
 socket.on('newMessage', function(message) {
     
@@ -51,9 +46,34 @@ socket.on('newMessage', function(message) {
     scrollToBottom()
 } )
 
-socket.on('disconnect', function() {
-    console.log('Disconnected from the server')
+// The listener for location message
+socket.on('newLocationMessage', function(message) {
+    let formattedTime = moment(message.createdAt).format('h:mm a')
+
+    let template = jQuery('#location-message-template').html()  
+    let html = Mustache.render(template, {
+        url: message.url,
+        from: message.from,
+        createdAt: formattedTime
+    })
+
+    jQuery('#message').append(html)
+    scrollToBottom()
+
 })
+
+jQuery('#message-form').on('submit', function() {
+        event.preventDefault();
+        let messageTextBox = jQuery('[name=message]')
+
+        socket.emit('createMessage', {
+            from: 'User',
+            text: messageTextBox.val(),
+            createdAt: new Date().getTime()
+            }, function() {
+                messageTextBox.val('')
+        })
+    })
 
 const locationButton = jQuery('#send-location')
 
@@ -75,19 +95,14 @@ locationButton.on('click', function() {
     }
 })
 
-// The listener for location message
-socket.on('newLocationMessage', function(message) {
-    let formattedTime = moment(message.createdAt).format('h:mm a')
-
-    let template = jQuery('#location-message-template').html()  
-    let html = Mustache.render(template, {
-        url: message.url,
-        from: message.from,
-        createdAt: formattedTime
-    })
-
-    jQuery('#message').append(html)
-    scrollToBottom()
-
+socket.on('disconnect', function() {
+    console.log('Disconnected from the server')
 })
 
+socket.on('updateUserList', function(users) {
+    let ol = jQuery('<ol></ol>')
+    users.forEach(function(user) {
+        ol.append(jQuery('<li></li>').text(user))
+    })
+    jQuery('#users').html(ol)
+})
