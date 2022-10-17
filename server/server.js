@@ -7,7 +7,7 @@ const express = require('express')
 const socketIO = require('socket.io')
 
 const { generateMessage, generateLocationMessage } = require('./utils/message')
-const { isRealString } = require('./utils/validation')
+const { isRealString, nameIsUnique } = require('./utils/validation')
 const { Users } = require('./utils/users')
 
 const app = express()
@@ -25,10 +25,16 @@ io.on('connection', (socket) => {
     console.log('New user connected'.yellow)
 
     socket.on('join', (params, callback) => {
+        if(isRealString(params.room)) {
+            params.room = params.room.toLowerCase()
+        }
+
         if(!isRealString(params.name) || !isRealString(params.room)) {
             callback('Name and room name are required.')
-        } 
-        params.room = params.room.toLowerCase()
+        } else if(!nameIsUnique(users.getUserList(params.room), params.name)) {
+            callback('Name must be unique')
+        }
+
         socket.join(params.room)
         users.removeUser(socket.id)
         users.addUser(socket.id, params.name, params.room)
