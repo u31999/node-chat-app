@@ -1,5 +1,7 @@
 # Chat App Build with Node.js
 
+Chat application, allow users to join into room for chatting with people in that room, user need to join to a room a username and the room name, the username must be unique in the room, the room name is case-sensitive.
+
 ## Build with express.js, and Socket.io
 
 ## Used in:
